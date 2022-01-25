@@ -1,0 +1,6 @@
+# Lock Files
+*.lock
+
+# Folders
+.next/
+node_modules/
