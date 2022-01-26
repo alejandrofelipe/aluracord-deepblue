@@ -1,6 +1,6 @@
-import {Box, Button, Text, TextField, Image} from '@skynexui/components';
+import {Box, Button, Text, TextField, Image, Icon} from '@skynexui/components';
 import appConfig from '../config.json';
-import {useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useRouter} from "next/router";
 
 
@@ -23,7 +23,38 @@ function Titulo({children, as: Component = 'h1'}) {
 
 export default function PaginaInicial() {
 	const [username, setUsername] = useState('alejandrofelipe');
+	const [githubData, setGithubData] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 	const router = useRouter();
+
+	const getUserInfo = (username) => {
+		fetch(`https://api.github.com/users/${username}`)
+			.then(response => {
+				if (response.ok) {
+					return response.json();
+				} else throw new Error('Usuario não encontrado.');
+			})
+			.then(data => {
+				setGithubData(data);
+			})
+			.catch(error => {
+				setError(error?.message || error);
+				console.log(error?.message || error);
+			})
+			.finally(() => {
+				setLoading(false);
+			});
+	}
+
+	useEffect(() => {
+		setError(null);
+		setLoading(true);
+		const timeoutId = setTimeout(() => {
+			getUserInfo(username);
+		}, 1000);
+		return () => clearTimeout(timeoutId);
+	}, [username]);
 
 	const handleInputChange = (event) => {
 		setUsername(event.target.value);
@@ -64,8 +95,13 @@ export default function PaginaInicial() {
 						as="form"
 						onSubmit={handleSubmit}
 						styleSheet={{
-							display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignSelf: 'center',
-							width: {xs: '100%', sm: '50%'}, textAlign: 'center'
+							display: 'flex',
+							flexDirection: 'column',
+							alignItems: 'center',
+							justifyContent: 'center',
+							alignSelf: 'center',
+							width: {xs: '100%', sm: '50%'},
+							textAlign: 'center'
 						}}
 					>
 						<Titulo tag="h2">Boas vindas de volta!</Titulo>
@@ -87,10 +123,11 @@ export default function PaginaInicial() {
 									backgroundColor: appConfig.theme.colors.neutrals[800],
 								},
 							}}
-						 />
+						/>
 						<Button
 							type='submit'
 							label='Entrar'
+							disabled={loading || (error !== null)}
 							fullWidth
 							buttonColors={{
 								contrastColor: appConfig.theme.colors.neutrals["000"],
@@ -109,7 +146,7 @@ export default function PaginaInicial() {
 							display: 'flex',
 							flexDirection: 'column',
 							alignItems: 'center',
-							maxWidth: '200px',
+							maxWidth: '215px',
 							padding: '16px',
 							backgroundColor: appConfig.theme.colors.neutrals[800],
 							border: '1px solid',
@@ -118,25 +155,63 @@ export default function PaginaInicial() {
 							flex: 1,
 						}}
 					>
-						<Image
-							width="150"
-							height="150"
-							styleSheet={{
-								borderRadius: '50%',
-								marginBottom: '16px',
-							}}
-							src={`https://github.com/${username}.png`}
-						/>
+						{
+							loading
+								? <Box
+									styleSheet={{
+										display: 'flex',
+										alignItems: 'center',
+										justifyContent: 'center',
+										width: '150px',
+										height: '150px',
+										borderRadius: '50%',
+										backgroundColor: appConfig.theme.colors.neutrals["300"],
+										marginBottom: '16px',
+									}}
+								>
+									<span>Aguarde ...</span>
+								</Box>
+								: <Image
+									width="150"
+									height="150"
+									styleSheet={{
+										borderRadius: '50%',
+										marginBottom: '16px',
+									}}
+									src={
+										error
+											? `https://avatars.dicebear.com/api/pixel-art-neutral/aaaaaa.svg`
+											: `https://github.com/${username}.png`
+									}
+								/>
+						}
 						<Text
-							variant="body4"
+							as="a"
+							target="_blank"
+							href={
+								(loading || error)
+									? '#' : githubData.html_url
+							}
+							variant="body3"
 							styleSheet={{
 								color: appConfig.theme.colors.neutrals[200],
 								backgroundColor: appConfig.theme.colors.neutrals[900],
 								padding: '3px 10px',
-								borderRadius: '1000px'
+								borderRadius: '1000px',
+								display: 'flex',
+								gap: '5px',
+								alignItems: 'center'
 							}}
 						>
-							{username}
+							{
+								(loading || error)
+									? '' : <Icon name="FaGithub"/>
+							}
+							{
+								loading
+									? '...'
+									: (error ? error : githubData.login)
+							}
 						</Text>
 					</Box>
 					{/* Photo Area */}

@@ -3,4 +3,5 @@
 
 # Folders
 .next/
+.idea/
 node_modules/
