@@ -1,3 +1,5 @@
+import appConfig from '../config.json';
+
 function GlobalStyle() {
 	return (
 		<style global jsx>{`
@@ -25,6 +27,13 @@ function GlobalStyle() {
 
 			#__next > * {
 				flex: 1;
+			}
+
+			.main-background {
+				background-color: ${appConfig.theme.colors.primary[500]};
+				background-repeat: no-repeat;
+				background-size: cover;
+				background-blend-mode: multiply;
 			}
 
 			/* ./App fit Height */
