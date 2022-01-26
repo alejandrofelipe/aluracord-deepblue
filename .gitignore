@@ -1,6 +1,6 @@
 # Lock Files
 *.lock
-
+package-lock.json
 # Folders
 .next/
 .idea/

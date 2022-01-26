@@ -1,0 +1,43 @@
+Arguments: 
+  C:\Users\alejandro.SESCRN\scoop\apps\nodejs-lts\current\node.exe C:\Users\alejandro.SESCRN\scoop\apps\nodejs-lts\current\bin\node_modules\yarn\bin\yarn.js
+
+PATH: 
+  C:\Program Files\PowerShell\7;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\dotnet\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\GAM\;C:\PROGRA~1\IBM\SQLLIB\BIN;C:\PROGRA~1\IBM\SQLLIB\FUNCTION;C:\ProgramData\chocolatey\bin;C:\Program Files (x86)\dotnet\;C:\Program Files\PowerShell\7\;C:\Users\alejandro.SESCRN\scoop\apps\composer\current\home\vendor\bin;C:\Users\alejandro.SESCRN\scoop\apps\openjdk11\current\bin;C:\Users\alejandro.SESCRN\scoop\apps\nodejs-lts\current\bin;C:\Users\alejandro.SESCRN\scoop\apps\nodejs-lts\current;C:\Users\alejandro.SESCRN\scoop\apps\python\current\Scripts;C:\Users\alejandro.SESCRN\scoop\apps\python\current;C:\Users\alejandro.SESCRN\scoop\apps\rustup\current\.cargo\bin;C:\Users\alejandro.SESCRN\scoop\apps\yarn\current\Yarn\bin;C:\Users\alejandro.SESCRN\scoop\apps\openjdk8-redhat-jre\current\bin;C:\Users\alejandro.SESCRN\scoop\apps\flutter\current\bin\cache\dart-sdk\bin;C:\Users\alejandro.SESCRN\scoop\apps\android-sdk\current\tools\bin;C:\Users\alejandro.SESCRN\scoop\shims;C:\Users\alejandro.SESCRN\AppData\Local\Microsoft\WindowsApps;C:\Users\alejandro.SESCRN\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\alejandro.SESCRN\AppData\Local\Microsoft\WindowsApps;C:\Users\alejandro.SESCRN\.dotnet\tools;C:\Users\alejandro.SESCRN\AppData\Local\GitHubDesktop\bin;C:\Program Files (x86)\GitHub CLI\;C:\Users\alejandro.SESCRN\Documents\WebStorm\aluracord-deepblue\node_modules\.bin
+
+Yarn version: 
+  1.22.17
+
+Node version: 
+  16.13.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: EPERM: operation not permitted, unlink 'C:\Users\alejandro.SESCRN\Documents\WebStorm\aluracord-deepblue\node_modules\@next\swc-win32-x64-msvc\next-swc.win32-x64-msvc.node'
+
+npm manifest: 
+  {
+  	"name": "aluracord-deepblue",
+  	"version": "1.0.1",
+  	"main": "index.js",
+  	"license": "MIT",
+  	"dependencies": {
+  		"@skynexui/components": "^1.24.2",
+  		"next": "^12.0.8",
+  		"react": "^17.0.2",
+  		"react-dom": "^17.0.2"
+  	},
+  	"scripts": {
+  		"start": "next start",
+  		"build": "next build",
+  		"dev": "next dev",
+  		"test": "next test"
+  	}
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
