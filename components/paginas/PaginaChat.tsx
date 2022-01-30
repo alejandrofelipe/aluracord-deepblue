@@ -5,11 +5,23 @@ import {
 	chakra,
 	HStack,
 	Icon,
-	IconButton, Image, Menu, MenuButton, MenuItem, MenuList, Skeleton, SkeletonCircle, SkeletonText, Stack,
+	IconButton,
+	Image,
+	Menu,
+	MenuButton,
+	MenuItem,
+	MenuList,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+	Skeleton,
+	SkeletonCircle,
+	SkeletonText,
+	Stack,
 	Text,
 	Textarea,
+	VStack,
 	useColorMode,
-	VStack
 } from "@chakra-ui/react";
 import BaseContainer from "../customizado/BaseContainer";
 import {FiSend, FiSmile, FiTrash} from "react-icons/fi";
@@ -18,6 +30,7 @@ import {useCallback, useEffect, useMemo, useState} from "react";
 import {createClient} from "@supabase/supabase-js";
 import {useRouter} from "next/router";
 import {BsFillCaretDownSquareFill} from "react-icons/bs";
+import GithubProfile from "../elementos/GithubProfile";
 
 const
 	SUPBASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQ3NTY3MCwiZXhwIjoxOTU5MDUxNjcwfQ.OXQdub5RlaWl97NrxsiVDW0NaOpjgmdhx-pZBB8l6Pc',
@@ -69,9 +82,8 @@ export default function PaginaChat() {
 				de: 'alejandrofelipe',
 				texto: mensagem
 			})
-			.then(({data: novasMensagens}) => {
+			.then(() => {
 				setMensagem('');
-				// setListMensagens([...novasMensagens, ...listaMensagens]);
 				setLoading(false);
 			});
 	}, [mensagem]);
@@ -138,10 +150,6 @@ function MenssagemLista(
 								 borderColor={colorMode === 'dark' ? 'blue.800' : 'blue.600'}
 								 flexDirection="column-reverse"
 								 borderRadius={5} p={2} flex={1} overflowX="hidden" overflowY="auto">
-		{mensagens.map(m => (
-			<MensagemItem key={m.id} mensagem={m} onDelete={handleDeleteMessage}
-										disabled={m.id === lastDeleteId}/>
-		))}
 		{
 			loading &&
 			<HStack as="li" p={1}>
@@ -152,7 +160,10 @@ function MenssagemLista(
 				</VStack>
 			</HStack>
 		}
-
+		{mensagens.map(m => (
+			<MensagemItem key={m.id} mensagem={m} onDelete={handleDeleteMessage}
+										disabled={m.id === lastDeleteId}/>
+		))}
 	</VStack>;
 }
 
@@ -165,8 +176,19 @@ function MensagemItem(
 ) {
 	return (
 		<MensagemContainer as="li" sx={{'&:hover': {opacity: disabled ? 0.6 : 'initial'}}}>
-			<Image boxSize="40px" loading="lazy" borderRadius="full" alignSelf="flex-start"
-						 src={`https://github.com/${mensagem.de}.png`}/>
+			<Popover isLazy={true} placement="right">
+				{({isOpen}) => (
+					<>
+						<PopoverTrigger>
+							<Image boxSize="40px" loading="lazy" borderRadius="full" alignSelf="flex-start"
+										 src={`https://github.com/${mensagem.de}.png`} sx={{cursor: 'pointer'}}/>
+						</PopoverTrigger>
+						<PopoverContent maxWidth="250px">
+							{isOpen && <GithubProfile username={mensagem.de}/>}
+						</PopoverContent>
+					</>
+				)}
+			</Popover>
 			<VStack flex={1} alignItems="stretch">
 				<HStack w="100%" justifyContent="flex-start" alignItems="flex-end">
 					<Text as="strong">{mensagem.de}</Text>

@@ -4,5 +4,5 @@ export interface GithubUser {
 	location: string;
 	login: string;
 	name: string;
-	url: string;
+	html_url: string;
 }

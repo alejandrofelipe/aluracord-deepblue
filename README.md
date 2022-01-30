@@ -32,4 +32,6 @@ Projeto criado na Imersão React 4 (@alura)
 ### Aula 4
 
 - [x] 🔷 Mostrar o loading de mensagens.
-- [ ] 🔷 Fazer um efeito quando passar o mouse em cima (Mostrar informações do perfil do github).
+- [x] 🔷 Fazer um efeito quando passar o mouse em cima (Mostrar informações do perfil do github).
+  - [X] ➕ Avatar mostra *popover* com informações do github do usuario.
+- [x] ➕ Mudança de biblioteca de componentes para <a href="https://chakra-ui.com/">Chakra UI</a>.

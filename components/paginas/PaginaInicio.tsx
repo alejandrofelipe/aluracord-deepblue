@@ -32,7 +32,7 @@ function Login() {
 				 justifyContent="center" gap={8} p={4} textAlign="center">
 			<Box>
 				<Heading><Icon as={GiJellyfish}/> DeepBlue</Heading>
-				<Text>Vem dar um mergulho nesse chat! <Anchor>{colorMode}</Anchor></Text>
+				<Text>Vem dar um mergulho nesse chat!</Text>
 			</Box>
 			<Box>
 				<Text fontSize="xs">

@@ -5,13 +5,13 @@ import {
 	Image,
 	Skeleton,
 	SkeletonCircle,
-	SkeletonText,
 	Text,
-	useColorModeValue
+	VStack
 } from "@chakra-ui/react";
 import {FaGithub} from "react-icons/fa";
 import {useEffect, useState} from "react";
 import {GithubUser} from "../types/github";
+import Anchor from "./Anchor";
 
 export default function GithubProfile({username}: { username: string }) {
 	const
@@ -20,7 +20,8 @@ export default function GithubProfile({username}: { username: string }) {
 		[githubUser, setGithubUser] = useState<GithubUser>(null);
 
 	useEffect(() => {
-		fetch(`https://api.github.com/users/${username}`)
+		const controller = new AbortController();
+		fetch(`https://api.github.com/users/${username}`, {signal: controller.signal})
 			.then(response => {
 				if (response.ok) {
 					return response.json() as Promise<GithubUser>;
@@ -36,6 +37,9 @@ export default function GithubProfile({username}: { username: string }) {
 			.finally(() => {
 				setLoading(false);
 			});
+		return () => {
+			controller.abort();
+		}
 	}, [username]);
 
 	if (error)
@@ -50,19 +54,20 @@ export default function GithubProfile({username}: { username: string }) {
 
 	if (loading)
 		return <GithubProfileContainer>
-			<SkeletonCircle size="150px"/>
-			<Box p={1}>
-				<Skeleton height="20px"/>
-			</Box>
+			<SkeletonCircle size="150px" mx="auto"/>
+			<VStack p={1} gap={0.5}>
+				<Skeleton height="15px" width="150px" mx="auto"/>
+				<Skeleton height="15px" width="130px" mx="auto"/>
+			</VStack>
 		</GithubProfileContainer>;
 
 	return <GithubProfileContainer as="a" href={`https://github.com/${username}`} textAlign="center">
-		<Image boxSize="150px" borderRadius="full" shadow="sm" mx="auto"
+		<Image boxSize="150px" borderRadius="full" shadow="sm" mx="auto" border="1px solid gray"
 					 fallbackSrc="https://avatars.dicebear.com/api/pixel-art-neutral/aaaaaa.svg"
 					 src={githubUser.avatar_url}/>
 		<Box p={1}>
 			<Text>{githubUser.name}</Text>
-			<Text><Icon as={FaGithub}/> {githubUser.login}</Text>
+			<Anchor href={githubUser.html_url}><Icon as={FaGithub}/> {githubUser.login}</Anchor>
 		</Box>
 	</GithubProfileContainer>
 }
@@ -72,7 +77,6 @@ const GithubProfileContainer = chakra(Box, {
 		p: 2,
 		border: '1px solid white',
 		borderRadius: 5,
-		overflow: 'hidden',
-		bg: 'gray.700'
+		overflow: 'hidden'
 	}
 })
