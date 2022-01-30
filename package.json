@@ -4,12 +4,19 @@
 	"main": "index.js",
 	"license": "MIT",
 	"dependencies": {
+		"@babel/core": "^7.16.12",
+		"@chakra-ui/icons": "^1.1.1",
+		"@chakra-ui/react": "^1.8.1",
+		"@chakra-ui/system": "^1.10.1",
+		"@emotion/react": "^11",
+		"@emotion/styled": "^11",
 		"@skynexui/components": "^1.24.2",
+		"@supabase/supabase-js": "^1.29.4",
+		"babel-plugin-styled-components": "^2.0.2",
+		"framer-motion": "^5",
 		"next": "^12.0.8",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
-		"@babel/core": "^7.16.12",
-		"babel-plugin-styled-components": "^2.0.2",
 		"react-is": "^17.0.2",
 		"styled-components": "^5.3.3",
 		"styled-jsx": "^5.0.0"
@@ -19,5 +26,10 @@
 		"build": "next build",
 		"dev": "next dev",
 		"test": "next test"
+	},
+	"devDependencies": {
+		"@types/node": "^17.0.13",
+		"@types/react": "^17.0.38",
+		"typescript": "^4.5.5"
 	}
 }
