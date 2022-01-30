@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import {FaGithub} from "react-icons/fa";
 import {useEffect, useState} from "react";
-import {GithubUser} from "../types/github";
+import {GithubUser} from "../../types/github";
 import Anchor from "./Anchor";
 
 export default function GithubProfile({username}: { username: string }) {
@@ -19,9 +19,8 @@ export default function GithubProfile({username}: { username: string }) {
 		[error, setError] = useState(null),
 		[githubUser, setGithubUser] = useState<GithubUser>(null);
 
-	useEffect(() => {
-		const controller = new AbortController();
-		fetch(`https://api.github.com/users/${username}`, {signal: controller.signal})
+	const getGithubInfo = (username: string) => {
+		fetch(`https://api.github.com/users/${username}`)
 			.then(response => {
 				if (response.ok) {
 					return response.json() as Promise<GithubUser>;
@@ -37,8 +36,17 @@ export default function GithubProfile({username}: { username: string }) {
 			.finally(() => {
 				setLoading(false);
 			});
+	}
+
+	useEffect(() => {
+		setLoading(true);
+		setError(null);
+		const timeoutId = setTimeout(() => {
+			getGithubInfo(username);
+		}, 800);
+
 		return () => {
-			controller.abort();
+			clearTimeout(timeoutId);
 		}
 	}, [username]);
 
@@ -64,7 +72,11 @@ export default function GithubProfile({username}: { username: string }) {
 	return <GithubProfileContainer as="a" href={`https://github.com/${username}`} textAlign="center">
 		<Image boxSize="150px" borderRadius="full" shadow="sm" mx="auto" border="1px solid gray"
 					 fallbackSrc="https://avatars.dicebear.com/api/pixel-art-neutral/aaaaaa.svg"
-					 src={githubUser.avatar_url}/>
+					 src={
+						 error
+							 ? 'https://avatars.dicebear.com/api/pixel-art-neutral/aaaaaa.svg'
+							 : githubUser.avatar_url
+					 }/>
 		<Box p={1}>
 			<Text>{githubUser.name}</Text>
 			<Anchor href={githubUser.html_url}><Icon as={FaGithub}/> {githubUser.login}</Anchor>

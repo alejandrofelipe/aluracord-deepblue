@@ -5,3 +5,4 @@ package-lock.json
 .next/
 .idea/
 node_modules/
+.env*

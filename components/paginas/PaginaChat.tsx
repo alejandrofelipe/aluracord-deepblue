@@ -21,29 +21,34 @@ import {
 	Text,
 	Textarea,
 	VStack,
-	useColorMode,
+	useColorMode, FormControl, FormLabel, Switch, Avatar,
 } from "@chakra-ui/react";
 import BaseContainer from "../customizado/BaseContainer";
-import {FiSend, FiSmile, FiTrash} from "react-icons/fi";
-import {Mensagem} from "../types/chat";
-import {useCallback, useEffect, useMemo, useState} from "react";
-import {createClient} from "@supabase/supabase-js";
+import {FiSend, FiTrash} from "react-icons/fi";
+import {Mensagem} from "../../types/chat";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useRouter} from "next/router";
 import {BsFillCaretDownSquareFill} from "react-icons/bs";
 import GithubProfile from "../elementos/GithubProfile";
-
-const
-	SUPBASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQ3NTY3MCwiZXhwIjoxOTU5MDUxNjcwfQ.OXQdub5RlaWl97NrxsiVDW0NaOpjgmdhx-pZBB8l6Pc',
-	SUPABASE_URL = 'https://annazvdevzijlbtlprsc.supabase.co';
+import StickerButton from "../elementos/StickerButton";
+import {useClient} from "../../context/SupabaseContext";
+import Anchor from "../elementos/Anchor";
 
 export default function PaginaChat() {
 	const
+		router = useRouter(),
 		[listaMensagens, setListMensagens] = useState<Mensagem[]>([]),
 		[mensagem, setMensagem] = useState(''),
-		[loading, setLoading] = useState(true);
+		[loading, setLoading] = useState(true),
+		{colorMode, toggleColorMode} = useColorMode(),
+		refInput = useRef<HTMLTextAreaElement>(),
+		supaClient = useClient();
 
-	const supaClient = useMemo(() => createClient(SUPABASE_URL, SUPBASE_ANON_KEY), []);
-	const router = useRouter();
+	const usuario: string = useMemo(() => {
+		if (router.query?.username)
+			return router.query.username;
+		return '';
+	}, [router.query]) as string;
 
 	useEffect(() => {
 		supaClient
@@ -70,23 +75,25 @@ export default function PaginaChat() {
 			.subscribe();
 
 		return () => {
-			supaSubscribe.unsubscribe()
+			supaSubscribe.unsubscribe();
 		}
 	}, []);
 
 	const enviarMensagem = useCallback(() => {
 		setLoading(true);
-		supaClient
-			.from('mensagens')
-			.insert({
-				de: 'alejandrofelipe',
-				texto: mensagem
-			})
+		sendMessage(usuario, mensagem)
 			.then(() => {
 				setMensagem('');
 				setLoading(false);
+				refInput.current.focus();
 			});
 	}, [mensagem]);
+
+	const sendMessage = (de: string, texto: string) => {
+		return supaClient
+			.from('mensagens')
+			.insert({de, texto});
+	}
 
 	const handleChange = (ev) => {
 		setMensagem(ev.target.value);
@@ -104,25 +111,46 @@ export default function PaginaChat() {
 		enviarMensagem();
 	};
 
+	const handleStickerSelect = (url: string) => {
+		setLoading(true);
+		sendMessage(usuario, `:sticker: ${url}`)
+			.then(() => {
+				setLoading(false);
+			})
+	}
+
+	const handleSwitchChange = () => {
+		toggleColorMode();
+	}
+
 	return (
 		<MainContainer
 			px={2}
 			bgImage="url(https://images.pexels.com/photos/1086584/pexels-photo-1086584.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260)">
 			<ChatContainer w="100%" maxW="1080px" height="95vh">
 				<HStack gap={2} py={2} justifyContent="space-between" alignItems="center">
-					<Text>alejandro</Text>
-					<Button variant="link" onClick={() => router.push('/')}>Sair</Button>
+					<Anchor href={`https://github.com/${usuario}`} d="flex" alignItems="center" gap={1}>
+						<Avatar size="sm" src={`https://github.com/${usuario}.png`}/> {usuario}
+					</Anchor>
+					<HStack>
+						<FormControl display='flex' alignItems='center'>
+							<FormLabel htmlFor='dark-mode' mb='0' mx="auto">
+								{colorMode === 'dark' ? '🌚' : '🌞'}
+							</FormLabel>
+							<Switch id='dark-mode' onChange={handleSwitchChange} isChecked={colorMode === 'dark'}/>
+						</FormControl>
+						<Button variant="ghost" onClick={() => router.push('/')}>Sair</Button>
+					</HStack>
 				</HStack>
-				<MenssagemLista mensagens={listaMensagens} loading={loading}/>
+				<MenssagemLista mensagens={listaMensagens} loading={loading} usuarioAtual={usuario}/>
 				<HStack as="form" onSubmit={handleSubmit}>
-					<Textarea resize="none" alignItems="stretch" variant="filled" colorScheme="blue" flex={1}
+					<Textarea ref={refInput} resize="none" alignItems="stretch" variant="filled" colorScheme="blue" flex={1}
 										bg="#00000009" placeholder="Digite sua mensagem" minH="42px" value={mensagem}
 										disabled={loading} onChange={handleChange} onKeyPress={handleEnterKeyPress}
 										autoFocus={true}/>
 					<IconButton colorScheme="blue" aria-label="Enviar" type="submit"
 											icon={<Icon as={FiSend}/>} isLoading={loading}/>
-					<IconButton colorScheme="blue" aria-label="Stickers" type="button"
-											icon={<Icon as={FiSmile}/>} disabled={loading}/>
+					<StickerButton loading={loading} onSelect={handleStickerSelect}/>
 				</HStack>
 			</ChatContainer>
 		</MainContainer>
@@ -130,14 +158,16 @@ export default function PaginaChat() {
 }
 
 function MenssagemLista(
-	{mensagens, loading}: {
+	{mensagens, loading, usuarioAtual}: {
 		mensagens: Mensagem[],
 		loading: boolean,
+		usuarioAtual: string
 	}
 ) {
-	const supaClient = useMemo(() => createClient(SUPABASE_URL, SUPBASE_ANON_KEY), []);
+	const supaClient = useClient();
 	const {colorMode} = useColorMode();
 	const [lastDeleteId, setLastDeleteId] = useState<number>(null);
+
 	const handleDeleteMessage = async (id: number) => {
 		setLastDeleteId(lastDeleteId);
 		await supaClient
@@ -162,20 +192,21 @@ function MenssagemLista(
 		}
 		{mensagens.map(m => (
 			<MensagemItem key={m.id} mensagem={m} onDelete={handleDeleteMessage}
-										disabled={m.id === lastDeleteId}/>
+										disabled={m.id === lastDeleteId} enableOptions={m.de === usuarioAtual}/>
 		))}
 	</VStack>;
 }
 
 function MensagemItem(
-	{mensagem, onDelete, disabled = false}: {
+	{mensagem, onDelete, disabled = false, enableOptions = true}: {
 		mensagem: Mensagem,
 		onDelete: (id: number) => void,
-		disabled?: boolean
+		disabled?: boolean,
+		enableOptions?: boolean
 	}
 ) {
 	return (
-		<MensagemContainer as="li" sx={{'&:hover': {opacity: disabled ? 0.6 : 'initial'}}}>
+		<MensagemContainer as="li" sx={{'&:hover': {opacity: (disabled ? 0.6 : 'initial')}}}>
 			<Popover isLazy={true} placement="right">
 				{({isOpen}) => (
 					<>
@@ -189,23 +220,33 @@ function MensagemItem(
 					</>
 				)}
 			</Popover>
-			<VStack flex={1} alignItems="stretch">
-				<HStack w="100%" justifyContent="flex-start" alignItems="flex-end">
+			<VStack flex={1} alignItems="stretch" gap={1}>
+				<Stack flexDirection={['column', 'row']} gap={[0, 2]} w="100%" justifyContent="flex-start"
+							 alignItems={["flex-start", "flex-end"]}>
 					<Text as="strong">{mensagem.de}</Text>
-					<Text as="small" fontSize="0.6em">{new Date(mensagem.created_at).toLocaleString()}</Text>
-				</HStack>
-				<Text mt="0 !important" overflowWrap="anywhere">{mensagem.texto}</Text>
+					<Text as="small" fontSize="0.6em" mt="0 !important">{new Date(mensagem.created_at).toLocaleString()}</Text>
+				</Stack>
+				{
+					mensagem.texto.startsWith(':sticker:')
+						? <Image w="140px" bg="#00000011" borderRadius={5}
+										 src={mensagem.texto.replace(':sticker:', '').trim()}/>
+						: <Text mt="0 !important" overflowWrap="anywhere">
+							{mensagem.texto}
+						</Text>
+				}
 			</VStack>
 			<Stack w="35px">
-				<Menu>
-					<MenuButton as={IconButton} variant="ghost" aria-label="deletar mensagem" size="sm"
-											marginLeft="auto !important" alignSelf="start"
-											icon={<BsFillCaretDownSquareFill/>} d="none" disabled={disabled}/>
-					<MenuList>
-						<MenuItem icon={<FiTrash/>} onClick={() => onDelete(mensagem.id)}>
-							Remover</MenuItem>
-					</MenuList>
-				</Menu>
+				{
+					enableOptions && <Menu>
+						<MenuButton as={IconButton} variant="ghost" aria-label="deletar mensagem" size="sm"
+												d="none" marginLeft="auto !important" alignSelf="start"
+												icon={<BsFillCaretDownSquareFill/>} disabled={disabled}/>
+						<MenuList>
+							<MenuItem icon={<FiTrash/>} onClick={() => onDelete(mensagem.id)}>
+								Remover</MenuItem>
+						</MenuList>
+					</Menu>
+				}
 			</Stack>
 		</MensagemContainer>
 	)

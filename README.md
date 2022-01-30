@@ -35,3 +35,10 @@ Projeto criado na Imersão React 4 (@alura)
 - [x] 🔷 Fazer um efeito quando passar o mouse em cima (Mostrar informações do perfil do github).
   - [X] ➕ Avatar mostra *popover* com informações do github do usuario.
 - [x] ➕ Mudança de biblioteca de componentes para <a href="https://chakra-ui.com/">Chakra UI</a>.
+- [x] ➕ Implementação de realtime: mensagens são atualizadas em diferentes dispositivos
+
+### Aula 5 [Final]
+
+- [x] 🔷 Toogle de Dark/Light mode implementados com o <a href="https://chakra-ui.com/">Chakra UI</a>.
+- [x] 🔷 Somente o usuário dono das mensagens pode apaga-las.
+- [x] 🔷 Variaveis de ambientes (chaves de acesso do Supabase) movidas para o vercel.

@@ -1,5 +1,8 @@
 import PaginaChat from "../components/paginas/PaginaChat";
+import {SupabaseProvider} from "../context/SupabaseContext";
 
 export default function chat() {
-	return <PaginaChat/>;
+	return <SupabaseProvider>
+		<PaginaChat/>
+	</SupabaseProvider>;
 }
