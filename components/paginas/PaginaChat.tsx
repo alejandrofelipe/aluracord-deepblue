@@ -81,7 +81,7 @@ export default function PaginaChat() {
 
 	const enviarMensagem = useCallback(() => {
 		setLoading(true);
-		sendMessage(usuario, mensagem)
+		sendMessage(usuario, mensagem.trim())
 			.then(() => {
 				setMensagem('');
 				setLoading(false);
@@ -148,7 +148,7 @@ export default function PaginaChat() {
 										bg="#00000009" placeholder="Digite sua mensagem" minH="42px" value={mensagem}
 										disabled={loading} onChange={handleChange} onKeyPress={handleEnterKeyPress}
 										autoFocus={true}/>
-					<IconButton colorScheme="blue" aria-label="Enviar" type="submit"
+					<IconButton colorScheme="blue" aria-label="Enviar" type="submit" disabled={mensagem.trim().length === 0}
 											icon={<Icon as={FiSend}/>} isLoading={loading}/>
 					<StickerButton loading={loading} onSelect={handleStickerSelect}/>
 				</HStack>

@@ -13,7 +13,13 @@ import {useEffect, useState} from "react";
 import {GithubUser} from "../../types/github";
 import Anchor from "./Anchor";
 
-export default function GithubProfile({username}: { username: string }) {
+export default function GithubProfile(
+	{username, onValidateUser = (a) => null, onLoading = () => null}: { 
+		username: string, 
+		onLoading?: () => void,
+		onValidateUser?: (isValid: boolean) => void 
+	}
+) {
 	const
 		[loading, setLoading] = useState(true),
 		[error, setError] = useState(null),
@@ -27,9 +33,11 @@ export default function GithubProfile({username}: { username: string }) {
 				} else throw new Error('Usuario não encontrado.');
 			})
 			.then(data => {
+				onValidateUser(true);
 				setGithubUser(data);
 			})
 			.catch(error => {
+				onValidateUser(false);
 				setError(error?.message || error);
 				console.log(error?.message || error);
 			})
@@ -49,6 +57,11 @@ export default function GithubProfile({username}: { username: string }) {
 			clearTimeout(timeoutId);
 		}
 	}, [username]);
+
+	useEffect(() => {
+		if (loading)
+			onLoading();
+	}, [loading])
 
 	if (error)
 		return <GithubProfileContainer>

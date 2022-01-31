@@ -34,15 +34,16 @@ export default function PaginaInicio() {
 
 function Login() {
 	const router = useRouter();
-	const [username, setUsername] = useState('alejandrofelipe');
+	const [usuario, setUsuario] = useState('alejandrofelipe');
+	const [usuarioValido, setUsuarioValido] = useState(true);
 
 	const handleLogin = useCallback(async (ev) => {
 		ev.preventDefault();
-		await router.push(`/chat?username=${username}`);
-	}, [username]);
+		await router.push(`/chat?username=${usuario}`);
+	}, [usuario]);
 
 	const handleInputChange = (ev) => {
-		setUsername(ev.target.value);
+		setUsuario(ev.target.value);
 	}
 
 	return <LoginContainer>
@@ -56,9 +57,10 @@ function Login() {
 				<InputGroup>
 					<InputLeftElement pointerEvents="none" children={<Icon as={FiGithub}/>}/>
 					<Input variant="filled" name="username" placeholder="Usuario do Github"
-								 value={username} onChange={handleInputChange}/>
+								 value={usuario} onChange={handleInputChange} autoComplete="off"/>
 				</InputGroup>
-				<Button type="submit" leftIcon={<Icon as={FiLogIn}/>} w="full">Entrar</Button>
+				<Button type="submit" leftIcon={<Icon as={FiLogIn}/>} 
+								disabled={usuario.length < 1 || !usuarioValido} w="full">Entrar</Button>
 			</VStack>
 			<Box>
 				<Text fontSize="xs">
@@ -73,7 +75,9 @@ function Login() {
 		</Box>
 		<Box flex={1} d="flex" flexDirection="column" alignItems="center"
 				 justifyContent="center" p={4}>
-			<GithubProfile username={username}/>
+			<GithubProfile username={usuario} 
+				onLoading={() => setUsuarioValido(false)}
+				onValidateUser={isValido => setUsuarioValido(isValido)}/>
 		</Box>
 	</LoginContainer>
 }
