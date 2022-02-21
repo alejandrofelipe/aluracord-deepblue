@@ -21,7 +21,7 @@ import {
 	Text,
 	Textarea,
 	VStack,
-	useColorMode, FormControl, FormLabel, Switch, Avatar,
+	useColorMode, FormControl, FormLabel, Switch, Avatar, toast, useToast,
 } from "@chakra-ui/react";
 import BaseContainer from "../customizado/BaseContainer";
 import {FiSend, FiTrash} from "react-icons/fi";
@@ -37,6 +37,7 @@ import Anchor from "../elementos/Anchor";
 export default function PaginaChat() {
 	const
 		router = useRouter(),
+		toast = useToast(),
 		[listaMensagens, setListMensagens] = useState<Mensagem[]>([]),
 		[mensagem, setMensagem] = useState(''),
 		[loading, setLoading] = useState(true),
@@ -56,8 +57,10 @@ export default function PaginaChat() {
 			.select('*')
 			.order('created_at', {ascending: false})
 			.then(({data}) => {
-				setListMensagens(data);
+				setListMensagens(data || []);
 				setLoading(false);
+				if(data === null)
+					toast({title: 'Erro', description: 'Não foi possível carregar as mensagens', status: 'error'});
 			});
 
 		const supaSubscribe = supaClient
@@ -122,12 +125,12 @@ export default function PaginaChat() {
 	const handleSwitchChange = () => {
 		toggleColorMode();
 	}
-
+//w="100%" maxW="1080px" height="95vh"
 	return (
 		<MainContainer
 			px={2}
 			bgImage="url(https://images.pexels.com/photos/1086584/pexels-photo-1086584.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260)">
-			<ChatContainer w="100%" maxW="1080px" height="95vh">
+			<ChatContainer w="100%" maxW="1080px" h="95vh">
 				<HStack gap={2} py={2} justifyContent="space-between" alignItems="center">
 					<Anchor href={`https://github.com/${usuario}`} d="flex" alignItems="center" gap={1}>
 						<Avatar size="sm" src={`https://github.com/${usuario}.png`}/> {usuario}
